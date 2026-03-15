@@ -37,7 +37,7 @@ function duracionHoras(inicio, fin) {
 exports.getMonitores = async (req, res) => {
   try {
     const monitores = await Usuario.find({ rol: 'monitor' })
-      .select('nombre rol activo telefono email fcmToken createdAt updatedAt')
+      .select('nombre rol activo telefono email fcmToken avisos createdAt updatedAt')
       .sort({ nombre: 1 });
 
     return res.status(200).json({
@@ -69,7 +69,7 @@ exports.getMonitorById = async (req, res) => {
     }
 
     const monitor = await Usuario.findOne({ _id: id, rol: 'monitor' })
-      .select('nombre rol activo telefono email fcmToken createdAt updatedAt');
+      .select('nombre rol activo telefono email fcmToken avisos createdAt updatedAt');
 
     if (!monitor) {
       return res.status(404).json({
@@ -132,7 +132,7 @@ exports.getResumenMonitor = async (req, res) => {
     }
 
     const monitor = await Usuario.findOne({ _id: id, rol: 'monitor' })
-      .select('nombre rol activo telefono email fcmToken createdAt updatedAt');
+      .select('nombre rol activo telefono email fcmToken avisos createdAt updatedAt');
 
     if (!monitor) {
       return res.status(404).json({
@@ -235,12 +235,19 @@ exports.getResumenMonitor = async (req, res) => {
 exports.updateMonitor = async (req, res) => {
   try {
     const { id } = req.params;
-    const { nombre, activo, telefono, email, fcmToken } = req.body;
+    const { nombre, activo, telefono, email, fcmToken, avisos } = req.body;
 
     if (!esObjectIdValido(id)) {
       return res.status(400).json({
         ok: false,
         msg: 'ID de monitor no válido',
+      });
+    }
+
+    if (avisos !== undefined && typeof avisos !== 'string') {
+      return res.status(400).json({
+        ok: false,
+        msg: 'El campo avisos debe ser un texto',
       });
     }
 
@@ -273,7 +280,29 @@ exports.updateMonitor = async (req, res) => {
       monitor.fcmToken = fcmToken || null;
     }
 
+    if (avisos !== undefined) {
+      monitor.avisos = avisos.trim();
+    }
+
     await monitor.save();
+
+    const avisosActuales = (monitor.avisos || '').trim();
+    const debeEnviarPush =
+      avisos !== undefined &&
+      avisosActuales.length > 0 &&
+      avisosActuales !== avisosAnteriores &&
+      !!monitor.fcmToken;
+
+    if (debeEnviarPush) {
+      const titulo = 'Nuevo aviso de coordinación';
+      const cuerpo = avisosActuales.length > 120
+        ? `${avisosActuales.substring(0, 117)}...`
+        : avisosActuales;
+
+      await sendPush(monitor.fcmToken, titulo, cuerpo);
+      console.log(titulo);
+      console.log(cuerpo);
+    }
 
     return res.status(200).json({
       ok: true,

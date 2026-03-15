@@ -37,6 +37,11 @@ const UsuarioSchema = new Schema(
       trim: true,
       lowercase: true,
     },
+    avisos: {
+      type: String,
+      default: null, // o '' si prefieres cadena vacía
+      trim: true,
+    },
   },
   {
     timestamps: true,
