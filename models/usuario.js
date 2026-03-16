@@ -9,6 +9,11 @@ const UsuarioSchema = new Schema(
       trim: true,
       lowercase: true,
     },
+    nombreReal: {
+      type: String,
+      trim: true,
+      default: null,
+    },
     password: {
       type: String,
       required: true,

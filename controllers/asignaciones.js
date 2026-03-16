@@ -135,7 +135,7 @@ function obtenerRangoUtcDeDiaMadrid(fechaStr) {
 
 async function popularAsignacion(asignacionId) {
   return Asignacion.findById(asignacionId)
-    .populate('monitorId', 'nombre rol activo')
+    .populate('monitorId', 'nombre nombreReal rol activo')
     .populate('centroId', 'nombre ubicacion activo')
     .populate('actividadId', 'nombre descripcion centroId activo');
 }
@@ -437,7 +437,7 @@ exports.getAsignaciones = async (req, res) => {
     }
 
     const asignaciones = await Asignacion.find(filtro)
-      .populate('monitorId', 'nombre rol activo')
+      .populate('monitorId', 'nombre nombreReal rol activo')
       .populate('centroId', 'nombre ubicacion activo')
       .populate('actividadId', 'nombre descripcion centroId activo')
       .sort({ start: 1 });
@@ -506,7 +506,7 @@ exports.getAsignacionesByMonitor = async (req, res) => {
     }
 
     const asignaciones = await Asignacion.find({ monitorId })
-      .populate('monitorId', 'nombre rol activo')
+      .populate('monitorId', 'nombre nombreReal rol activo')
       .populate('centroId', 'nombre ubicacion activo')
       .populate('actividadId', 'nombre descripcion centroId activo')
       .sort({ start: 1 });
@@ -539,7 +539,7 @@ exports.getAsignacionesByCentro = async (req, res) => {
     }
 
     const asignaciones = await Asignacion.find({ centroId })
-      .populate('monitorId', 'nombre rol activo')
+      .populate('monitorId', 'nombre nombreReal rol activo')
       .populate('centroId', 'nombre ubicacion activo')
       .populate('actividadId', 'nombre descripcion centroId activo')
       .sort({ start: 1 });

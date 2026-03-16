@@ -37,7 +37,7 @@ function duracionHoras(inicio, fin) {
 exports.getMonitores = async (req, res) => {
   try {
     const monitores = await Usuario.find({ rol: 'monitor' })
-      .select('nombre rol activo telefono email fcmToken avisos createdAt updatedAt')
+      .select('nombre nombreReal rol activo telefono email fcmToken avisos createdAt updatedAt')
       .sort({ nombre: 1 });
 
     return res.status(200).json({
@@ -69,7 +69,7 @@ exports.getMonitorById = async (req, res) => {
     }
 
     const monitor = await Usuario.findOne({ _id: id, rol: 'monitor' })
-      .select('nombre rol activo telefono email fcmToken avisos createdAt updatedAt');
+      .select('nombre nombreReal rol activo telefono email fcmToken avisos createdAt updatedAt');
 
     if (!monitor) {
       return res.status(404).json({
@@ -132,7 +132,7 @@ exports.getResumenMonitor = async (req, res) => {
     }
 
     const monitor = await Usuario.findOne({ _id: id, rol: 'monitor' })
-      .select('nombre rol activo telefono email fcmToken avisos createdAt updatedAt');
+      .select('nombre nombreReal rol activo telefono email fcmToken avisos createdAt updatedAt');
 
     if (!monitor) {
       return res.status(404).json({
