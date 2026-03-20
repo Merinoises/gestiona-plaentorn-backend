@@ -1,6 +1,7 @@
 const mongoose = require('mongoose');
 const Usuario = require('../models/usuario');
 const Asignacion = require('../models/asignacion');
+const { sendPush } = require('../helpers/notifications');
 
 function esObjectIdValido(id) {
   return mongoose.Types.ObjectId.isValid(id);
@@ -279,6 +280,8 @@ exports.updateMonitor = async (req, res) => {
     if (fcmToken !== undefined) {
       monitor.fcmToken = fcmToken || null;
     }
+
+    const avisosAnteriores = (monitor.avisos || '').trim();
 
     if (avisos !== undefined) {
       monitor.avisos = avisos.trim();
